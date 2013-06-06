@@ -6,7 +6,6 @@
 //= require lib/crypto-js/crypto.js
 //= require lib/crypto-js/sha256.js
 //= require lib/crypto-js/ripemd160.js
-//= require lib/crypto-js/pbkdf2.js
 
 //= require lib/jsbn/prng4.js
 //= require lib/jsbn/rng.js
