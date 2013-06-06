@@ -27,14 +27,17 @@ html
 
   script src="/js/bootstrap.min.js"
   script src="/js/jstz.min.js"
-  
-  - if @timezone.nil?
 
+  javascript:
+    $(document).ready(function() {
+      /* Start feeding the sjcl entropy pool */
+      sjcl.random.startCollectors();
+    });
+
+  - if @timezone.nil?
     javascript:
-    
       $(document).ready(function() {
         var timezone = jstz.determine();
-        
         $.post('/set_timezone', {"name": timezone.name()}, function(response) {});
       });
       
