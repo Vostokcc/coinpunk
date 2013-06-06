@@ -1,16 +1,50 @@
-.text-center
-  .row
-    .span12
-      h1 New Account
-  .row
-    - if !@account.errors.empty?
-      .span4.offset4.alert.alert-error
-        p There were some errors, please correct:
-        - @account.errors.each do |error|
-          div: #{error.last.first.capitalize}.
-    .span12
-      form method="POST" action="/accounts/create"
-        fieldset
-          div: input name="email" type="text" placeholder="Your email" value="#{@account.email}"
-          div: input name="password" type="password" placeholder="Create a password"
-          div: button class="btn btn-large btn-success" href="#" style="margin-top: 10px" Create Account
+javascript:
+
+  var passwordStrength = {
+    enabled: false,
+
+    enable: function() {
+      console.log(this.enabled);
+      
+      if(this.enabled === true)
+        return;
+      
+      this.enabled = true;
+      $.strength("#email", "#password", function(username, password, strength){
+        $("#progressBar").css('width', strength.score+'%');
+        var status = strength.status.charAt(0).toUpperCase() + strength.status.slice(1);
+        $('#passwordStrengthStatus').text(status);
+      });
+    }
+  }
+
+.row.text-center
+  .span12
+    h1 New Account
+.row
+  - if !@account.errors.empty?
+    .span4.offset4.alert.alert-error
+      p There were some errors, please correct:
+      - @account.errors.each do |error|
+        div: #{error.last.first.capitalize}.
+  .span12
+    form method="POST" action="/accounts/create"
+      fieldset
+      
+        .row
+          .span6.offset3
+            div
+              h3 <font color="red">IMPORTANT</font> password information:
+              h4 Your data is being encrypted in a way that the server cannot access your Bitcoin account. If you lose your password,  there is no way to reset it.
+              h3 <strong>You will lose your bitcoins, <u>forever</u></strong>.<br><u>Remember your password</u>.
+              h4 Your password must also be a minimum of 10 characters. If you're making a new password, write it down somewhere. You will likely forget it if you don't.
+        .row style="margin-top:20px"
+          .span4.offset4.text-center
+            div: input id="email" name="email" type="text" placeholder="Your email" value="#{@account.email}"
+            div: input id="password" name="password" type="password" placeholder="Create a password" onfocus="passwordStrength.enable()"
+            div id="passwordStrengthStatus"
+            .progress.progress-info.progress-striped style="width: 250px; margin-left: 60px"
+              .bar id="progressBar" style="width: 0%"
+              
+            div: input name="password_confirm" type="password" placeholder="Confirm your password"
+            div: button class="btn btn-large btn-success" href="#" style="margin-top: 10px" Create Account

@@ -1,7 +1,9 @@
 //= require lib/underscore
-//= require lib/jquery
 //= require lib/bootstrap
 //= require lib/jstz
+
+//= require lib/password_strength.js
+//= require lib/jquery.strength.js
 
 //= require lib/crypto-js/crypto.js
 //= require lib/crypto-js/sha256.js
@@ -28,9 +30,9 @@
 //= require lib/bitcoinjs-lib/wallet.js
 //= require lib/bitcoinjs-lib/txdb.js
 
-//= require lib/js-nacl/nacl.js
 //= require lib/sjcl.js
 //= require lib/sjcl-sha512.js
 
 //= require coinpunk/coinpunk.js
 //= require coinpunk/pbkdf2.js
+//= require coinpunk/safe_deposit_box.js
