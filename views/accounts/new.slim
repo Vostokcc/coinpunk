@@ -1,11 +1,13 @@
 javascript:
 
+  $(document).ready(function() {
+    $('#createAccountButton').removeAttr('disabled');
+  });
+
   var passwordStrength = {
     enabled: false,
 
     enable: function() {
-      console.log(this.enabled);
-      
       if(this.enabled === true)
         return;
       
@@ -18,6 +20,49 @@ javascript:
     }
   }
 
+  var createAccount = function() {
+    var email = $('#email').val();
+    var password = $('#password').val();
+    var passwordConfirm = $('#password_confirm').val();
+    var errors = [];
+
+    if(/.+@.+\..+/.exec(email) === null)
+      errors.push('Email is not valid.');
+
+    if(password === '')
+      errors.push('Password cannot be blank.')
+
+    if(password != passwordConfirm)
+      errors.push('Passwords do not match.');
+    
+    if(password.length < 10)
+      errors.push('Password must be at least 10 characters.');
+
+    if(errors.length > 0) {
+      var errorsDiv = $('#errors');
+      errorsDiv.html('');
+      for(i=0;i<errors.length;i++) {
+        errorsDiv.html(errorsDiv.html() + errors[i] + '<br>');
+      }
+      $('#errors').removeClass('hidden');
+    } else {
+      $('#errors').addClass('hidden');
+
+      $('#createAccountButton').attr('disabled', 'disabled');
+      $('#createAccountButton').removeClass('btn-success');
+      $('#createAccountButton').text('Creating account, please wait..');
+
+      coinpunk.wallet = new coinpunk.Wallet();
+      var cipherPassword = coinpunk.wallet.cipherPass(password);
+      var publicAddress = coinpunk.wallet.createNewAddress();
+
+      var store = coinpunk.wallet.encrypt();
+      /* var verification = coinpunk.wallet.verification(); */
+      console.log(store);
+      $('#test').text(store);
+    }
+  };
+
 .row.text-center
   .span12
     h1 New Account
@@ -28,7 +73,7 @@ javascript:
       - @account.errors.each do |error|
         div: #{error.last.first.capitalize}.
   .span12
-    form method="POST" action="/accounts/create"
+    form action="#" onsubmit="return false;"
       fieldset
       
         .row
@@ -38,6 +83,11 @@ javascript:
               h4 Your data is being encrypted in a way that the server cannot access your Bitcoin account. If you lose your password,  there is no way to reset it.
               h3 <strong>You will lose your bitcoins, <u>forever</u></strong>.<br><u>Remember your password</u>.
               h4 Your password must also be a minimum of 10 characters. If you're making a new password, write it down somewhere. You will likely forget it if you don't.
+        
+        
+        .row
+          .span4.offset4.alert.alert-error.hidden id="errors"
+        
         .row style="margin-top:20px"
           .span4.offset4.text-center
             div: input id="email" name="email" type="text" placeholder="Your email" value="#{@account.email}"
@@ -45,6 +95,7 @@ javascript:
             div id="passwordStrengthStatus"
             .progress.progress-info.progress-striped style="width: 250px; margin-left: 60px"
               .bar id="progressBar" style="width: 0%"
-              
-            div: input name="password_confirm" type="password" placeholder="Confirm your password"
-            div: button class="btn btn-large btn-success" href="#" style="margin-top: 10px" Create Account
+            
+            div: input id="password_confirm" name="password_confirm" type="password" placeholder="Confirm your password"
+            div: button id="createAccountButton" class="btn btn-large btn-success" href="#" style="margin-top: 10px" onclick="createAccount(); return false" Create Account
+            div id="test"

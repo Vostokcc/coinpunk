@@ -34,5 +34,4 @@
 //= require lib/sjcl-sha512.js
 
 //= require coinpunk/coinpunk.js
-//= require coinpunk/pbkdf2.js
-//= require coinpunk/safe_deposit_box.js
+//= require coinpunk/wallet.js
