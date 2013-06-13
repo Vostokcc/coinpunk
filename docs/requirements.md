@@ -26,7 +26,7 @@ JRuby is now supported! Make sure you are using version 1.7 or later. You will n
 
 * For PostgreSQL: `jdbc:postgresql://postgres@localhost/coinbase`
 * For MySQL: `jdbc:mysql://root@localhost/coinbase`
-* For SQLite: `jdbc:sqlite://coinbase.sqlite3`
+* For SQLite: `jdbc:sqlite:./coinpunk.sqlite3`
 
 ## Hardware Requirements
 

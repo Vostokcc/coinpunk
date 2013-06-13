@@ -12,12 +12,7 @@ class Controller < Sinatra::Base
       helpers Sinatra::Sessionography
     end
 
-
-    $bitcoin = Silkroad::Client.new(
-      CONFIG['bitcoind_rpcuser'],
-      CONFIG['bitcoind_rpcpassword'],
-      url: CONFIG['bitcoind_rpchost']
-    )
+    $bitcoin = Silkroad::Client.new CONFIG['bitcoind_uri']
 
     use Rack::Session::Cookie, key:          'coinpunk',
                                path:         '/',
@@ -64,8 +59,8 @@ class Controller < Sinatra::Base
     $bitcoin.rpc(meth, *args)
   end
 
-  def create_account(email, password, temporary_password=false)
-    account = Account.new email: email, password: password, temporary_password: temporary_password
+  def create_account(email, wallet)
+    account = Account.new email: email, wallet: wallet
 
     if account.valid?
       DB.transaction do

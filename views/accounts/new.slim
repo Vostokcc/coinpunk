@@ -38,10 +38,11 @@ javascript:
     if(password.length < 10)
       errors.push('Password must be at least 10 characters.');
 
+    var errorsDiv = $('#errors');
+
     if(errors.length > 0) {
-      var errorsDiv = $('#errors');
       errorsDiv.html('');
-      for(i=0;i<errors.length;i++) {
+      for(var i=0;i<errors.length;i++) {
         errorsDiv.html(errorsDiv.html() + errors[i] + '<br>');
       }
       $('#errors').removeClass('hidden');
@@ -53,13 +54,28 @@ javascript:
       $('#createAccountButton').text('Creating account, please wait..');
 
       coinpunk.wallet = new coinpunk.Wallet();
-      var cipherPassword = coinpunk.wallet.cipherPass(password);
-      var publicAddress = coinpunk.wallet.createNewAddress();
 
-      var store = coinpunk.wallet.encrypt();
-      /* var verification = coinpunk.wallet.verification(); */
-      console.log(store);
-      $('#test').text(store);
+      var publicAddress  = coinpunk.wallet.createNewAddress();
+      var cipherPassword = coinpunk.wallet.cipherPass(password);
+      var verification   = coinpunk.wallet.verification();
+
+      $.post('/accounts/create', {
+        email:                  email,
+        wallet:                 coinpunk.wallet.encrypt(),
+        initial_public_address: publicAddress,
+        verification_key:       verification.verificationKey,
+        verification_salt:      verification.salt
+      }, function(response) {
+        if(response.result == 'ok') {
+          sessionStorage.cipherPassword = cipherPassword;
+          window.location.href = '/dashboard';
+        } else {
+          errorsDiv.html('');
+          for(var i=0;i<response.messages.length;i++) {
+            errorsDiv.html(errorsDiv.html() + response.messages[i] + '<br>');
+          }
+        }
+      });
     }
   };
 

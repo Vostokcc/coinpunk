@@ -15,10 +15,10 @@ coinpunk.Wallet = function(cipherText, cipherPasswordInput) {
   this.createNewAddress = function() {
     if(!store.privateKeys)
       store.privateKeys = [];
-    
+
     var eckey = new Bitcoin.ECKey();
     store.privateKeys.push(eckey.getExportedPrivateKey());
-    return eckey.getBitcoinAddress();
+    return eckey.getBitcoinAddress().toString();
   };
 
   this.cipherPass = function(plaintext) {
@@ -34,9 +34,12 @@ coinpunk.Wallet = function(cipherText, cipherPasswordInput) {
   this.verification = function(salt) {
     if(!salt)
       var salt = sjcl.random.randomWords(2, 0);
+    else
+      var salt = sjcl.codec.base64.toBits(salt);
 
-    var cipherBase64 = sjcl.codec.base64.fromBits(sjcl.misc.pbkdf2(cipherPassword, salt));
+    var cipherBase64 = sjcl.codec.base64.fromBits(sjcl.misc.pbkdf2(cipherPassBase64, salt));
+    var saltBase64 = sjcl.codec.base64.fromBits(salt);
 
-    return {verificationKey: cipherBase64, salt: salt};
+    return {verificationKey: cipherBase64, salt: saltBase64};
   };
 }
