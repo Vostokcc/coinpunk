@@ -1,1 +1,2 @@
 var coinpunk = {};
+coinpunk.controllers = {};

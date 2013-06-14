@@ -34,4 +34,5 @@
 //= require lib/sjcl-sha512.js
 
 //= require coinpunk/coinpunk.js
-//= require coinpunk/wallet.js
+//= require coinpunk/controllers/accounts.js
+//= require coinpunk/models/wallet.js

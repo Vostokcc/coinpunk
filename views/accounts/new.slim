@@ -1,83 +1,7 @@
 javascript:
-
   $(document).ready(function() {
     $('#createAccountButton').removeAttr('disabled');
   });
-
-  var passwordStrength = {
-    enabled: false,
-
-    enable: function() {
-      if(this.enabled === true)
-        return;
-      
-      this.enabled = true;
-      $.strength("#email", "#password", function(username, password, strength){
-        $("#progressBar").css('width', strength.score+'%');
-        var status = strength.status.charAt(0).toUpperCase() + strength.status.slice(1);
-        $('#passwordStrengthStatus').text(status);
-      });
-    }
-  }
-
-  var createAccount = function() {
-    var email = $('#email').val();
-    var password = $('#password').val();
-    var passwordConfirm = $('#password_confirm').val();
-    var errors = [];
-
-    if(/.+@.+\..+/.exec(email) === null)
-      errors.push('Email is not valid.');
-
-    if(password === '')
-      errors.push('Password cannot be blank.')
-
-    if(password != passwordConfirm)
-      errors.push('Passwords do not match.');
-    
-    if(password.length < 10)
-      errors.push('Password must be at least 10 characters.');
-
-    var errorsDiv = $('#errors');
-
-    if(errors.length > 0) {
-      errorsDiv.html('');
-      for(var i=0;i<errors.length;i++) {
-        errorsDiv.html(errorsDiv.html() + errors[i] + '<br>');
-      }
-      $('#errors').removeClass('hidden');
-    } else {
-      $('#errors').addClass('hidden');
-
-      $('#createAccountButton').attr('disabled', 'disabled');
-      $('#createAccountButton').removeClass('btn-success');
-      $('#createAccountButton').text('Creating account, please wait..');
-
-      coinpunk.wallet = new coinpunk.Wallet();
-
-      var publicAddress  = coinpunk.wallet.createNewAddress();
-      var cipherPassword = coinpunk.wallet.cipherPass(password);
-      var verification   = coinpunk.wallet.verification();
-
-      $.post('/accounts/create', {
-        email:                  email,
-        wallet:                 coinpunk.wallet.encrypt(),
-        initial_public_address: publicAddress,
-        verification_key:       verification.verificationKey,
-        verification_salt:      verification.salt
-      }, function(response) {
-        if(response.result == 'ok') {
-          sessionStorage.cipherPassword = cipherPassword;
-          window.location.href = '/dashboard';
-        } else {
-          errorsDiv.html('');
-          for(var i=0;i<response.messages.length;i++) {
-            errorsDiv.html(errorsDiv.html() + response.messages[i] + '<br>');
-          }
-        }
-      });
-    }
-  };
 
 .row.text-center
   .span12
@@ -89,7 +13,7 @@ javascript:
       - @account.errors.each do |error|
         div: #{error.last.first.capitalize}.
   .span12
-    form action="#" onsubmit="return false;"
+    form action="#" onsubmit="return false;" autocomplete="off"
       fieldset
       
         .row
@@ -107,11 +31,11 @@ javascript:
         .row style="margin-top:20px"
           .span4.offset4.text-center
             div: input id="email" name="email" type="text" placeholder="Your email" value="#{@account.email}"
-            div: input id="password" name="password" type="password" placeholder="Create a password" onfocus="passwordStrength.enable()"
+            div: input id="password" name="password" type="password" placeholder="Create a password" onfocus="coinpunk.controllers.accounts.passwordStrength.enable()"
             div id="passwordStrengthStatus"
             .progress.progress-info.progress-striped style="width: 250px; margin-left: 60px"
               .bar id="progressBar" style="width: 0%"
             
-            div: input id="password_confirm" name="password_confirm" type="password" placeholder="Confirm your password"
-            div: button id="createAccountButton" class="btn btn-large btn-success" href="#" style="margin-top: 10px" onclick="createAccount(); return false" Create Account
+            div: input id="password_confirm" name="password_confirm" type="password" placeholder="Confirm your password" autocomplete="off"
+            div: button id="createAccountButton" class="btn btn-large btn-success" href="#" style="margin-top: 10px" onclick="coinpunk.controllers.accounts.create(); return false" Create Account
             div id="test"

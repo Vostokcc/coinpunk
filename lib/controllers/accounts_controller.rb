@@ -42,19 +42,22 @@ class AccountsController < Controller
   post '/create' do
     dashboard_if_signed_in
 
-    account = Account.create({
+    account = Account.new({
       email:             params[:email],
       verification_key:  params[:verification_key],
       verification_salt: params[:verification_salt],
       wallet:            params[:wallet]
     })
 
-    if account.new? # invalid
-      {result: 'error', messages: account.errors.collect {|k,v| v.last}}.to_json
-    else
+    content_type :json
+
+    if account.valid? # invalid
+      account.save
       session[:account_email] = account.email
       flash[:success] = 'Account successfully created!'
       {result: 'ok'}.to_json
+    else
+      {result: 'error', messages: account.errors.collect {|k,v| v.last}}.to_json
     end
   end
 end

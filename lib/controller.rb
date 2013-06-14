@@ -60,11 +60,14 @@ class Controller < Sinatra::Base
   end
 
   def create_account(email, wallet)
+    # TODO FIXME
+    raise 'Not working'
     account = Account.new email: email, wallet: wallet
 
     if account.valid?
       DB.transaction do
         account.save
+        
         address = bitcoin_rpc 'getaccountaddress', email
         account.add_receive_address name: 'Default', bitcoin_address: address
       end
